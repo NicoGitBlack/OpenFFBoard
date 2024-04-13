@@ -20,6 +20,8 @@
 
 
 # Open FFBoard
+This fork is to support CyberGear Xiaomi motor (12N.m ~100€) 
+
 The Open FFBoard is an open source force feedback interface with the goal of creating a platform for highly compatible FFB simulation devices like steering wheels and joysticks.
 
 This firmware is optimized for the Open FFBoard and mainly designed for use with DD steering wheels.
