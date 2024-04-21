@@ -25,6 +25,7 @@ This fork is to support CyberGear Xiaomi motor (12N.m ~100€)
 More info about the CyberGear motor here:
 	 - Github project https://github.com/search?q=repo%3Aproject-sternbergia%2Fcybergear_m5%20ADDR_IQ_REF&type=code
   	 	> Set a torque/current : 
+     ```
      				#define ADDR_IQ_REF                0x7006
 	 			#define CMD_RAM_WRITE                   18
      				void CybergearDriver::send_command(uint8_t can_id, uint8_t cmd_id, uint16_t option, uint8_t len, uint8_t * data)
@@ -44,6 +45,7 @@ More info about the CyberGear motor here:
 				  memcpy(&data[4], &value, 4);
 				  send_command(can_id, CMD_RAM_WRITE, master_can_id_, 8, data);
 				}
+    ```
   	 - 
 
 The Open FFBoard is an open source force feedback interface with the goal of creating a platform for highly compatible FFB simulation devices like steering wheels and joysticks.
