@@ -25,27 +25,27 @@ This fork is to support CyberGear Xiaomi motor (12N.m ~100€)
 More info about the CyberGear motor here:
 	 - Github project https://github.com/search?q=repo%3Aproject-sternbergia%2Fcybergear_m5%20ADDR_IQ_REF&type=code
   	 	> Set a torque/current : 
-     ```
-     				#define ADDR_IQ_REF                0x7006
-	 			#define CMD_RAM_WRITE                   18
-     				void CybergearDriver::send_command(uint8_t can_id, uint8_t cmd_id, uint16_t option, uint8_t len, uint8_t * data)
-				{
-				  uint32_t id = cmd_id << 24 | option << 8 | can_id;
-				  can_->send_message(id, data, len, true);
-				  ++send_count_;
-				}
-     				void CybergearDriver::write_float_data(uint8_t can_id, uint16_t addr, float value, float min, float max)
-				{
-				  uint8_t data[8] = {0x00};
-				  data[0] = addr & 0x00FF;
-				  data[1] = addr >> 8;
-				
-				  float val = (max < value) ? max : value;
-				  val = (min > value) ? min : value;
-				  memcpy(&data[4], &value, 4);
-				  send_command(can_id, CMD_RAM_WRITE, master_can_id_, 8, data);
-				}
-    ```
+```
+#define ADDR_IQ_REF                0x7006
+#define CMD_RAM_WRITE                   18
+void CybergearDriver::send_command(uint8_t can_id, uint8_t cmd_id, uint16_t option, uint8_t len, uint8_t * data)
+{
+  uint32_t id = cmd_id << 24 | option << 8 | can_id;
+  can_->send_message(id, data, len, true);
+  ++send_count_;
+}
+void CybergearDriver::write_float_data(uint8_t can_id, uint16_t addr, float value, float min, float max)
+{
+  uint8_t data[8] = {0x00};
+  data[0] = addr & 0x00FF;
+  data[1] = addr >> 8;
+
+  float val = (max < value) ? max : value;
+  val = (min > value) ? min : value;
+  memcpy(&data[4], &value, 4);
+  send_command(can_id, CMD_RAM_WRITE, master_can_id_, 8, data);
+}
+```
   	 - 
 
 The Open FFBoard is an open source force feedback interface with the goal of creating a platform for highly compatible FFB simulation devices like steering wheels and joysticks.
