@@ -11,6 +11,7 @@
 #include "MotorPWM.h"
 #include "VescCAN.h"
 #include "ODriveCAN.h"
+#include "CyberGearCAN.h"
 #include "MotorSimplemotion.h"
 
 //////////////////////////////////////////////
@@ -42,6 +43,9 @@ const std::vector<class_entry<MotorDriver>> Axis::axis1_drivers =
 #ifdef ODRIVE
 	add_class<ODriveCAN1,MotorDriver>(5),
 #endif
+#ifdef CYBERGEAR
+	add_class<CyberGearCAN1,MotorDriver>(11),
+#endif
 #ifdef VESC
 	add_class<VESC_1,MotorDriver>(7),
 #endif
@@ -65,6 +69,9 @@ const std::vector<class_entry<MotorDriver>> Axis::axis2_drivers =
 #endif
 #ifdef ODRIVE
 	add_class<ODriveCAN2,MotorDriver>(6),
+#endif
+#ifdef CYBERGEAR
+	add_class<CyberGearCAN2,MotorDriver>(12),
 #endif
 #ifdef VESC
 	add_class<VESC_2,MotorDriver>(8),

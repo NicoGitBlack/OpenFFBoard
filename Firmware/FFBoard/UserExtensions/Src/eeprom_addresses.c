@@ -147,6 +147,13 @@ const uint16_t VirtAddVarTab[NB_OF_VAR] =
 	ADR_ODRIVE_CANID, //0-6 ID M0, 7-12 ID M1, 13-15 can speed
 	ADR_ODRIVE_SETTING1_M0,
 	ADR_ODRIVE_SETTING1_M1,
+
+
+//CyberGear
+	ADR_CYBERGEAR_CANID,        //0-6 ID M0, 7-12 ID M1, 13-15 can speed  // TODO
+	ADR_CYBERGEAR_SETTING1_M0,  // TODO
+	ADR_CYBERGEAR_SETTING1_M1,  // TODO
+
 // VESC Section
 	ADR_VESC1_CANID, //0-7 AxisCanID, 8-16 VescCanId
 	ADR_VESC1_DATA, //0-2 can speed, 3 useVescEncoder
@@ -328,6 +335,12 @@ const uint16_t exportableFlashAddresses[NB_EXPORTABLE_ADR] =
 	ADR_ODRIVE_CANID, //0-6 ID M0, 7-12 ID M1, 13-15 can speed
 	ADR_ODRIVE_SETTING1_M0,
 	ADR_ODRIVE_SETTING1_M1,
+
+//CyberGear
+	ADR_CYBERGEAR_CANID,        //0-6 ID M0, 7-12 ID M1, 13-15 can speed  // TODO
+	ADR_CYBERGEAR_SETTING1_M0,  // TODO
+	ADR_CYBERGEAR_SETTING1_M1,  // TODO
+
 // VESC Section
 	ADR_VESC1_CANID, //0-7 AxisCanID, 8-16 VescCanId
 	ADR_VESC1_DATA, //0-2 can speed, 3 useVescEncoder

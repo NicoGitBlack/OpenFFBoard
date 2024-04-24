@@ -6,6 +6,7 @@
  */
 
 #include <ODriveCAN.h>
+#include <CyberGearCAN.h>
 #include "MotorDriver.h"
 #include "ClassChooser.h"
 
@@ -38,6 +39,12 @@ const std::vector<class_entry<MotorDriver>> MotorDriver::all_drivers =
 	add_class<ODriveCAN1,MotorDriver>(5),
 	add_class<ODriveCAN2,MotorDriver>(6),
 #endif
+
+#ifdef CYBERGEAR
+	add_class<CyberGearCAN1,MotorDriver>(11),
+	add_class<CyberGearCAN2,MotorDriver>(12),
+#endif
+
 #ifdef VESC
 	add_class<VESC_1,MotorDriver>(7),
 	add_class<VESC_2,MotorDriver>(8),
