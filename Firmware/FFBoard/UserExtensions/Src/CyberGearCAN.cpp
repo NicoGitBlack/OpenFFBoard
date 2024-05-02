@@ -11,33 +11,51 @@
 bool CyberGearCAN1::inUse = false;
 ClassIdentifier CyberGearCAN1::info = {
 		 .name = "CyberGear (M0)" ,
-		 .id=CLSID_MOT_ODRV0,	// 5
+		 .id=CLSID_MOT_CYBG0,	// B
 };
 bool CyberGearCAN2::inUse = false;
 ClassIdentifier CyberGearCAN2::info = {
 		 .name = "CyberGear (M1)" ,
-		 .id=CLSID_MOT_ODRV1,	// 6
+		 .id=CLSID_MOT_CYBG1,	// C
 };
 
 
 
+uint8_t master_can_id_ = 0;       //!< master can id
+uint8_t target_can_id_ = 0 ;       //!< target can id
+uint8_t run_mode_ = (uint8_t) CyberGearControlMode::MODE_MOTION ;            //!< run mode
+unsigned long send_count_ = 0 ;    //!< send count
+uint8_t receive_buffer_[64] = {0};  //!< receive buffer
+MotorStatus motor_status_;    //!< current motor status
+MotorParameter motor_param_;  //!< motor parameter
+
+
+
+
+// No significant modif from ODrive
 const ClassIdentifier CyberGearCAN1::getInfo(){
 	return info;
 }
-
+// No significant modif from ODrive
 const ClassIdentifier CyberGearCAN2::getInfo(){
 	return info;
 }
-
+// No significant modif from ODrive
 bool CyberGearCAN1::isCreatable(){
 	return !CyberGearCAN1::inUse; // Creatable if not already in use for example by another axis
 }
-
+// No significant modif from ODrive
 bool CyberGearCAN2::isCreatable(){
 	return !CyberGearCAN2::inUse; // Creatable if not already in use for example by another axis
 }
 
-CyberGearCAN::CyberGearCAN(uint8_t id)  : CommandHandler("odrv", CLSID_MOT_ODRV0,id),  Thread("CYBERGEAR", CYBERGEAR_THREAD_MEM, CYBERGEAR_THREAD_PRIO), motorId(id) {
+CyberGearCAN::CyberGearCAN(uint8_t id)  : CommandHandler("cybg", CLSID_MOT_CYBG0,id),
+										Thread("CYBERGEAR", CYBERGEAR_THREAD_MEM, CYBERGEAR_THREAD_PRIO),
+										motorId(id) {
+
+
+
+
 
 	if(motorId == 0){
 		nodeId = 0;
@@ -66,6 +84,7 @@ CyberGearCAN::~CyberGearCAN() {
 
 void CyberGearCAN::setCanFilter(){
 	// Set up a filter to receive cybergear commands
+	/*
 	CAN_FilterTypeDef sFilterConfig;
 	sFilterConfig.FilterBank = 0;
 	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
@@ -86,6 +105,7 @@ void CyberGearCAN::setCanFilter(){
 	sFilterConfig.FilterActivation = ENABLE;
 	sFilterConfig.SlaveStartFilterBank = 14;
 	this->filterId = this->port->addCanFilter(sFilterConfig);
+	*/
 }
 
 void CyberGearCAN::registerCommands(){
@@ -100,7 +120,7 @@ void CyberGearCAN::registerCommands(){
 	registerCommand("connected", CyberGearCAN_commands::connected, "CyberGear connection state",CMDFLAG_GET);
 }
 
-void CyberGearCAN::restoreFlash(){
+void CyberGearCAN::restoreFlash(){/*
 	uint16_t setting1addr = ADR_CYBERGEAR_SETTING1_M0;
 
 	uint16_t canIds = 0x3040;
@@ -118,10 +138,10 @@ void CyberGearCAN::restoreFlash(){
 	uint16_t settings1 = 0;
 	if(Flash_Read(setting1addr, &settings1)){
 		maxTorque = (float)clip(settings1 & 0xfff, 0, 0xfff) / 100.0;
-	}
+	}*/
 }
 
-void CyberGearCAN::saveFlash(){
+void CyberGearCAN::saveFlash(){/*
 	uint16_t setting1addr = ADR_CYBERGEAR_SETTING1_M0;
 
 	uint16_t canIds = 0x3040;
@@ -139,7 +159,7 @@ void CyberGearCAN::saveFlash(){
 	Flash_Write(ADR_CYBERGEAR_CANID,canIds);
 
 	uint16_t settings1 = ((int32_t)(maxTorque*100) & 0xfff);
-	Flash_Write(setting1addr, settings1);
+	Flash_Write(setting1addr, settings1);*/
 }
 
 void CyberGearCAN::Run(){
@@ -172,7 +192,7 @@ void CyberGearCAN::Run(){
 			// enable torque mode
 			if(cybergearCurrentState == CyberGearState::AXIS_STATE_CLOSED_LOOP_CONTROL){
 				this->setPos(0);
-				setMode(CyberGearControlMode::CONTROL_MODE_TORQUE_CONTROL, CyberGearInputMode::INPUT_MODE_PASSTHROUGH);
+				setMode(CyberGearControlMode::MODE_CURRENT ); // , CyberGearInputMode::INPUT_MODE_PASSTHROUGH);
 			}
 
 		break;
@@ -192,7 +212,7 @@ void CyberGearCAN::Run(){
 		}
 
 		if(HAL_GetTick() - lastVoltageUpdate > 1000){
-			requestMsg(0x17); // Update voltage
+			requestMsg(ADDR_VBUS); // Update voltage
 		}
 
 		if(HAL_GetTick() - lastCanMessage > 2000){ // Timeout
@@ -226,27 +246,33 @@ Encoder* CyberGearCAN::getEncoder(){
 
 /**
  * Must be in encoder cpr if not just used to zero the axis
+ * void CybergearDriver::set_position_ref(float position)
+ * {
+ *  write_float_data(target_can_id_, ADDR_LOC_REF, position, P_MIN, P_MAX);
+ * }
  */
+
 void CyberGearCAN::setPos(int32_t pos){
 	// Only change encoder count internally as offset
 	posOffset = lastPos - ((float)pos / (float)getCpr());
+
 }
 
 
-void CyberGearCAN::requestMsg(uint8_t cmd){
-	CAN_tx_msg msg;
+void CyberGearCAN::requestMsg(uint16_t  cmd){
 
-	msg.header.RTR = CAN_RTR_REMOTE;
-	msg.header.DLC = 0;
-	msg.header.StdId = cmd | (nodeId << 5);
-	port->sendMessage(msg);
+
+	uint8_t data[8] = {0x00};
+	memcpy(&data[0], &cmd, 2);
+	send_command(target_can_id_, CMD_RAM_READ, master_can_id_, 8, data);
+
 }
 
 float CyberGearCAN::getPos_f(){
 	// Do not start a new request if already waiting and within timeout
 	if(this->connected && (!posWaiting || HAL_GetTick() - lastPosTime > 5)){
 		posWaiting = true;
-		requestMsg(0x09);
+		requestMsg( ADDR_MECH_POS );
 	}
 	return lastPos-posOffset;
 }
@@ -264,7 +290,10 @@ uint32_t CyberGearCAN::getCpr(){
 }
 void CyberGearCAN::setTorque(float torque){
 	//if(motorReady()){
-		sendMsg<float>(0x0E,torque);
+		//sendMsg<float>(0x0E,torque);
+	    // void write_float_data(uint8_t can_id, uint16_t addr, float value, float min, float max)
+	float current = torque / maxTorque * IQ_MAX ;
+		write_float_data(target_can_id_, ADDR_IQ_REF, current, IQ_MIN, IQ_MAX);
 	//}
 }
 
@@ -273,14 +302,49 @@ EncoderType CyberGearCAN::getEncoderType(){
 }
 
 
-void CyberGearCAN::setMode(CyberGearControlMode controlMode,CyberGearInputMode inputMode){
-	uint64_t mode = (uint64_t) controlMode | ((uint64_t)inputMode << 32);
-	sendMsg(0x0B,mode);
+void CyberGearCAN::setMode(CyberGearControlMode controlMode ){ /// ,CyberGearInputMode inputMode){
+	// uint64_t mode = (uint64_t) controlMode | ((uint64_t)inputMode << 32);
+	// sendMsg(0x0B,mode);
+
+	// set class variable
+	  // run_mode_ = controlMode; //uint8_t run_mode
+	  uint8_t data[8] = {0x00};
+	  data[0] = ADDR_RUN_MODE & 0x00FF;
+	  data[1] = ADDR_RUN_MODE >> 8;
+	  data[4] = (uint8_t) controlMode  ;
+	  send_command(target_can_id_, CMD_RAM_WRITE, master_can_id_, 8, data);
+
 }
 
 void CyberGearCAN::setState(CyberGearState state){
 	sendMsg(0x07,(uint32_t)state);
 }
+
+void CyberGearCAN::send_command(uint8_t can_id, uint8_t cmd_id, uint16_t option, uint8_t len, uint8_t * data)
+{
+	CAN_tx_msg msg;
+	memcpy(&msg.data,&data, len );
+	msg.header.RTR = CAN_RTR_DATA;
+	msg.header.DLC =  len ;
+	uint32_t id = cmd_id << 24 | option << 8 | can_id; // from cybergear
+	msg.header.StdId = id ;
+	if(!port->sendMessage(msg)){
+		// Nothing
+	}
+	//++send_count_;
+}
+void CyberGearCAN::write_float_data(uint8_t can_id, uint16_t addr, float value, float min, float max)
+{
+  uint8_t data[8] = {0x00};
+  data[0] = addr & 0x00FF;
+  data[1] = addr >> 8;
+
+  float val = (max < value) ? max : value;
+  val = (min > value) ? min : value;
+  memcpy(&data[4], &val, 4);
+  send_command(can_id, CMD_RAM_WRITE, master_can_id_, 8, data);
+}
+
 
 
 void CyberGearCAN::turn(int16_t power){
@@ -297,7 +361,7 @@ void CyberGearCAN::turn(int16_t power){
  * Sends the start anticogging command
  */
 void CyberGearCAN::startAnticogging(){
-	sendMsg(0x10, (uint8_t)0);
+	// sendMsg(0x10, (uint8_t)0);
 }
 
 
@@ -378,51 +442,63 @@ void CyberGearCAN::canErrorCallback(CAN_HandleTypeDef *hcan){
 	//pulseErrLed();
 }
 
+
+
 void CyberGearCAN::canRxPendCallback(CAN_HandleTypeDef *hcan,uint8_t* rxBuf,CAN_RxHeaderTypeDef* rxHeader,uint32_t fifo){
 	uint16_t node = (rxHeader->StdId >> 5) & 0x3F;
 	if(node != this->nodeId){
 		return;
 	}
+
 	uint64_t msg = *reinterpret_cast<uint64_t*>(rxBuf);
-	uint8_t cmd = rxHeader->StdId & 0x1F;
+	// uint16_t cmd = rxHeader->StdId & 0x1F;
+
+	// uint16_t index = data[1] << 8 | data[0];
+	uint16_t cmd = rxBuf[1] << 8 | rxBuf[0];
+
+	uint8_t uint8_data;
+	memcpy(&uint8_data, &rxBuf[4], sizeof(uint8_t));
+
+	int16_t int16_data;
+	memcpy(&int16_data, &rxBuf[4], sizeof(int16_t));
+
+	float float_data;
+	memcpy(&float_data, &rxBuf[4], sizeof(float));
+
+	bool is_updated = true;
+
+
+
+
+
+
+
 
 	lastCanMessage = HAL_GetTick();
 
 	switch(cmd){
-	case 1:
-	{
-		// TODO error handling
-		errors = (msg & 0xffffffff);
-		cybergearCurrentState = (CyberGearState)( (msg >> 32) & 0xff);
-		cybergearMotorFlags = (msg >> 40) & 0xff;
-		cybergearEncoderFlags = ((msg >> 48) & 0xff);
-		cybergearControllerFlags = (msg >> 56) & 0xff;
+	case ADDR_RUN_MODE:
+	      motor_param_.run_mode = uint8_data;
+	      //CG_DEBUG_PRINTF("Receive ADDR_RUN_MODE = [0x%02x]\n", uint8_data);
+	      break;
 
-		if(waitReady){
-			waitReady = false;
-			state = CyberGearLocalState::WAIT_READY;
-		}
-		break;
-	}
-	case 0x09: // encoder pos float
-	{
-		uint64_t tp = msg & 0xffffffff;
-		memcpy(&lastPos,&tp,sizeof(float));
 
-		uint64_t ts = (msg >> 32) & 0xffffffff;
-		memcpy(&lastSpeed,&ts,sizeof(float));
+	case ADDR_MECH_POS : // encoder pos float
+	{
+		motor_param_.mech_pos = float_data;
+		//CG_DEBUG_PRINTF("Receive ADDR_MECH_POS = [%f]\n", float_data);
+		memcpy(&lastPos,&float_data,sizeof(float));
 		lastPosTime = HAL_GetTick();
 		posWaiting = false;
-
 		break;
 	}
 
-	case 0x17: // voltage
+	case ADDR_VBUS: // voltage
 	{
+		motor_param_.vbus = float_data;
+		// CG_DEBUG_PRINTF("Receive ADDR_VBUS = [%f]\n", float_data);
 		lastVoltageUpdate = HAL_GetTick();
-		uint64_t t = msg & 0xffffffff;
-		memcpy(&lastVoltage,&t,sizeof(float));
-
+		memcpy(&lastVoltage,&float_data,sizeof(float));
 		break;
 	}
 
