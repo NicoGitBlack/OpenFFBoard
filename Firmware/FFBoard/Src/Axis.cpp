@@ -10,6 +10,7 @@
 #include "TMC4671.h"
 #include "MotorPWM.h"
 #include "VescCAN.h"
+#include "CyberGearCAN.h"
 #include "ODriveCAN.h"
 #include "MotorSimplemotion.h"
 
@@ -48,6 +49,9 @@ const std::vector<class_entry<MotorDriver>> Axis::axis1_drivers =
 #ifdef SIMPLEMOTION
 	add_class<MotorSimplemotion1,MotorDriver>(9),
 #endif
+#ifdef CYBERGEAR
+	add_class<CYBERGEAR_1,MotorDriver>(11),
+#endif
 };
 
 /**
@@ -72,6 +76,9 @@ const std::vector<class_entry<MotorDriver>> Axis::axis2_drivers =
 //#ifdef SIMPLEMOTION
 //	add_class<MotorSimplemotion2,MotorDriver>(10), // TODO this likely does not work reliably with a single uart port and multiple devices
 //#endif
+#ifdef CYBERGEAR
+	add_class<CYBERGEAR_2,MotorDriver>(12),
+#endif
 };
 
 

@@ -175,6 +175,18 @@ uint16_t EE_ReadVariable(uint16_t VirtAddress, uint16_t* Data) will return 1 if 
 #define ADR_VESC3_CANID 0x3E6 //0-8 AxisCanID, 8-16 VescCanId
 #define ADR_VESC3_DATA 0x3E7 //0-2 can speed, 3 useVescEncoder
 #define ADR_VESC3_OFFSET 0x3E8 //16b offset
+// CYBERGEAR Section
+#define ADR_CYBERGEAR1_CANID 0x3F0 //0-7 AxisCanID, 8-16 CyberGearCanId
+#define ADR_CYBERGEAR1_DATA 0x3F1 //0-2 can speed, 3 useCyberGearEncoder
+#define ADR_CYBERGEAR1_OFFSET 0x3F2 //16b offset
+#define ADR_CYBERGEAR2_CANID 0x3E3 //0-8 AxisCanID, 8-16 CyberGearCanId
+#define ADR_CYBERGEAR2_DATA 0x3E4 //0-2 can speed, 3 useCyberGearEncoder
+#define ADR_CYBERGEAR2_OFFSET 0x3E5 //16b offset
+#define ADR_CYBERGEAR3_CANID 0x3E6 //0-8 AxisCanID, 8-16 CyberGearCanId
+#define ADR_CYBERGEAR3_DATA 0x3E7 //0-2 can speed, 3 useCyberGearEncoder
+#define ADR_CYBERGEAR3_OFFSET 0x3E8 //16b offset
+
+
 //MT Encoder
 #define ADR_MTENC_OFS 0x400
 #define ADR_MTENC_CONF1 0x401

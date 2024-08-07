@@ -18,6 +18,7 @@ static const uint8_t SW_VERSION_INT[3] = {1,14,3}; // Version as array. 8 bit ea
 #undef ODRIVE
 #undef CANBUTTONS
 #undef VESC
+#undef CYBERGEAR
 #endif
 
 

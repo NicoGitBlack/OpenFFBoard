@@ -139,6 +139,17 @@ Section comment,Name,Value,Comment on key,VirtAddVarTab,exportableFlashAddresses
 ,ADR_VESC3_CANID,0x3E6,"//0-8 AxisCanID, 8-16 VescCanId",1,1
 ,ADR_VESC3_DATA,0x3E7,"//0-2 can speed, 3 useVescEncoder",1,1
 ,ADR_VESC3_OFFSET,0x3E8,//16b offset,1,1
+// CYBERGEAR Section,,,,,
+,ADR_CYBERGEAR1_CANID,0x3F0,"//0-7 AxisCanID, 8-16 CyberGearCanId",1,1
+,ADR_CYBERGEAR1_DATA,0x3F1,"//0-2 can speed, 3 useCyberGearEncoder",1,1
+,ADR_CYBERGEAR1_OFFSET,0x3F2,//16b offset,1,1
+,ADR_CYBERGEAR2_CANID,0x3F3,"//0-8 AxisCanID, 8-16 CyberGearCanId",1,1
+,ADR_CYBERGEAR2_DATA,0x3F4,"//0-2 can speed, 3 useCyberGearEncoder",1,1
+,ADR_CYBERGEAR2_OFFSET,0x3F5,//16b offset,1,1
+,ADR_CYBERGEAR3_CANID,0x3F6,"//0-8 AxisCanID, 8-16 CyberGearCanId",1,1
+,ADR_CYBERGEAR3_DATA,0x3F7,"//0-2 can speed, 3 useCyberGearEncoder",1,1
+,ADR_CYBERGEAR3_OFFSET,0x3F8,//16b offset,1,1
+
 //MT Encoder,,,,,
 ,ADR_MTENC_OFS,0x400,,1,1
 ,ADR_MTENC_CONF1,0x401,,1,1

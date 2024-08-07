@@ -12,6 +12,7 @@
 #include "TMC4671.h"
 #include "MotorPWM.h"
 #include "VescCAN.h"
+#include "CyberGearCAN.h"
 #include "MotorSimplemotion.h"
 
 ClassIdentifier MotorDriver::info ={.name = "None" , .id=CLSID_MOT_NONE, .visibility = ClassVisibility::visible};
@@ -45,6 +46,10 @@ const std::vector<class_entry<MotorDriver>> MotorDriver::all_drivers =
 #ifdef SIMPLEMOTION
 	add_class<MotorSimplemotion1,MotorDriver>(9),
 	add_class<MotorSimplemotion2,MotorDriver>(10),
+#endif
+#ifdef CYBERGEAR
+	add_class<CYBERGEAR_1,MotorDriver>(11),
+	add_class<CYBERGEAR_2,MotorDriver>(12),
 #endif
 };
 

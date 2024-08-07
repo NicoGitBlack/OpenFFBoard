@@ -157,6 +157,17 @@ const uint16_t VirtAddVarTab[NB_OF_VAR] =
 	ADR_VESC3_CANID, //0-8 AxisCanID, 8-16 VescCanId
 	ADR_VESC3_DATA, //0-2 can speed, 3 useVescEncoder
 	ADR_VESC3_OFFSET, //16b offset
+// CYBERGEAR Section
+	ADR_CYBERGEAR1_CANID, //0-7 AxisCanID, 8-16 CyberGearCanId
+	ADR_CYBERGEAR1_DATA, //0-2 can speed, 3 useCyberGearEncoder
+	ADR_CYBERGEAR1_OFFSET, //16b offset
+	ADR_CYBERGEAR2_CANID, //0-7 AxisCanID, 8-16 CyberGearCanId
+	ADR_CYBERGEAR2_DATA, //0-2 can speed, 3 useCyberGearEncoder
+	ADR_CYBERGEAR2_OFFSET, //16b offset
+	ADR_CYBERGEAR3_CANID, //0-7 AxisCanID, 8-16 CyberGearCanId
+	ADR_CYBERGEAR3_DATA, //0-2 can speed, 3 useCyberGearEncoder
+	ADR_CYBERGEAR3_OFFSET, //16b offset
+
 //MT Encoder
 	ADR_MTENC_OFS,
 	ADR_MTENC_CONF1,
@@ -337,7 +348,18 @@ const uint16_t exportableFlashAddresses[NB_EXPORTABLE_ADR] =
 	ADR_VESC2_OFFSET, //16b offset
 	ADR_VESC3_CANID, //0-8 AxisCanID, 8-16 VescCanId
 	ADR_VESC3_DATA, //0-2 can speed, 3 useVescEncoder
-	ADR_VESC3_OFFSET, //16b offset
+	ADR_VESC3_OFFSET, //16b offset	
+// CYBERGEAR Section
+	ADR_CYBERGEAR1_CANID, //0-7 AxisCanID, 8-16 CyberGearCanId
+	ADR_CYBERGEAR1_DATA, //0-2 can speed, 3 useCyberGearEncoder
+	ADR_CYBERGEAR1_OFFSET, //16b offset
+	ADR_CYBERGEAR2_CANID, //0-7 AxisCanID, 8-16 CyberGearCanId
+	ADR_CYBERGEAR2_DATA, //0-2 can speed, 3 useCyberGearEncoder
+	ADR_CYBERGEAR2_OFFSET, //16b offset
+	ADR_CYBERGEAR3_CANID, //0-7 AxisCanID, 8-16 CyberGearCanId
+	ADR_CYBERGEAR3_DATA, //0-2 can speed, 3 useCyberGearEncoder
+	ADR_CYBERGEAR3_OFFSET, //16b offset
+
 //MT Encoder
 	ADR_MTENC_OFS,
 	ADR_MTENC_CONF1,

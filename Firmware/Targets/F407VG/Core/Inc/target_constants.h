@@ -47,6 +47,7 @@
 #define CANBUS
 #define ODRIVE
 #define VESC
+#define CYBERGEAR
 #define MTENCODERSPI // requires SPI3
 #define CANBUTTONS // Requires CAN
 #define CANANALOG // Requires CAN
