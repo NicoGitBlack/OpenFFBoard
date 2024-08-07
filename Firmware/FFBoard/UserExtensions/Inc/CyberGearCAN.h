@@ -16,6 +16,8 @@
 #include "CommandHandler.h"
 #include "PersistentStorage.h"
 
+#include "xiaomi_cybergear_driver.h"
+
 #ifdef CYBERGEAR
 #define CYBERGEAR_THREAD_MEM 256
 #define CYBERGEAR_THREAD_PRIO 25 // Must be higher than main thread
